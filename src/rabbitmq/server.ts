@@ -10,6 +10,7 @@ class RabbitMQServer {
   public async start(): Promise<void> {
     this.connection = await connect(this.uri);
     this.channel = await this.connection.createChannel();
+    console.log("Connected to RabbitMQ");
   }
 
   public async publish(queue: string, content: string) {
