@@ -1,6 +1,6 @@
 import morgan from "morgan";
 
-morgan.token("statusColor", (_, res) => {
+morgan.token("statusColor", (req, res) => {
   // get the status code if response written
   const status = res.statusCode;
 

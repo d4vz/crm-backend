@@ -26,6 +26,7 @@ describe("UserController (e2e)", () => {
       name: "aleatorio",
       email: "aleatorio@gmail.com",
       password: "senhacom9digitos",
+      company: "6603535000a99c3edd3c156f",
     };
 
     it("deve criar um usuário com status 201", async () => {
@@ -47,9 +48,21 @@ describe("UserController (e2e)", () => {
         name: "aleatorio",
         email: "emailinvalido",
         password: "senhacom9digitos",
+        company: "6603535000a99c3edd3c156f",
       };
 
       await agent.post("/users").send(invalidEmailData).set("Content-Type", "application/json").expect(400);
+    });
+
+    it("Deve retornar 403 se o usuário não tiver a empresa", async () => {
+      const invalidCompanyData: CreateUserDto = {
+        name: "aleatorio",
+        email: "emailinvalido",
+        password: "senhacom9digitos",
+        company: "aleatorio",
+      };
+
+      await agent.post("/users").send(invalidCompanyData).set("Content-Type", "application/json").expect(403);
     });
   });
 

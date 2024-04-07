@@ -50,14 +50,16 @@ describe("AuthController (e2e)", () => {
     it("deve retornar 404 ao fazer login com um email que não existe", async () => {
       await request(app.getServer()).post("/auth/login").send({ email: "wrongemail@gmail.com", password: user.password }).expect(404);
     });
+  });
 
-    describe("(GET) /me - Me", () => {
-      it("deve retornar 200 ao buscar o usuário logado", async () => {
-        const loginResponse = await request(app.getServer()).post("/auth/login").send({ email: testUser.email, password: testUser.password });
-        const token = loginResponse.body.token;
-        const response = await request(app.getServer()).get("/auth/me").set("Authorization", `Bearer ${token}`).expect(200);
-        expect(response.body).toHaveProperty("_id");
-      });
+  describe("(GET) /me - Me", () => {
+    it("deve retornar 200 ao buscar o usuário logado", async () => {
+      const loginResponse = await request(app.getServer()).post("/auth/login").send({ email: testUser.email, password: testUser.password });
+
+      const token = loginResponse.body.token;
+
+      const response = await request(app.getServer()).get("/auth/me").set("Authorization", `Bearer ${token}`).expect(200);
+      expect(response.body).toHaveProperty("_id");
     });
   });
 });

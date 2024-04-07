@@ -4,6 +4,7 @@ import { Container } from "typedi";
 import { CreateUserUseCase } from "../usecases/users/create-user.usecase";
 
 import { CreateUserDto, UpdateUserDto } from "@/dtos/users.dto";
+import { RequestWithUser } from "@/interfaces/auth.interface";
 import { DeleteUserUseCase } from "@/usecases/users/delete-user.usecase";
 import { FindAllUsersUseCase } from "@/usecases/users/find-all-users.usecase";
 import { FindUserByIdUseCase } from "@/usecases/users/find-user-by-id.usecase";
@@ -17,8 +18,9 @@ export class UserController {
   public findUserByIdUseCase = Container.get(FindUserByIdUseCase);
   public findAllUsersUseCase = Container.get(FindAllUsersUseCase);
 
-  public getUsers = asyncHandler(async (req: Request, res: Response) => {
-    const findAllUsersData: User[] = await this.findAllUsersUseCase.execute();
+  public getUsers = asyncHandler(async (req: RequestWithUser, res: Response) => {
+    const logged = req.user;
+    const findAllUsersData: User[] = await this.findAllUsersUseCase.execute(logged);
     res.status(200).json(findAllUsersData);
   });
 
@@ -28,9 +30,9 @@ export class UserController {
     res.status(200).json(findOneUserData);
   });
 
-  public createUser = asyncHandler(async (req: Request, res: Response) => {
+  public createUser = asyncHandler(async (req: RequestWithUser, res: Response) => {
     const userData: CreateUserDto = req.body;
-    const createUserData: User = await this.createUserUseCase.execute(userData);
+    const createUserData: User = await this.createUserUseCase.execute(userData, req.user);
     res.status(201).json(createUserData);
   });
 

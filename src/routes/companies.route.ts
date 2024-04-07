@@ -1,8 +1,8 @@
+import { createCompanySchema, updateCompanySchema } from "@/dtos/company.dto";
 import { authMiddleware } from "@/middlewares/auth.middleware";
-import { CompanyController } from "@controllers/companies.controller";
-import { createCompanySchema, updateCompanySchema } from "@dtos/companies.dto";
+import { validationMiddleware } from "@/middlewares/validation.middleware";
+import { CompanyController } from "@controllers/company.controller";
 import { Routes } from "@interfaces/routes.interface";
-import { validationMiddleware } from "@middlewares/validation.middleware";
 import { Router } from "express";
 
 export class CompaniesRoute implements Routes {
@@ -19,7 +19,7 @@ export class CompaniesRoute implements Routes {
     this.router.get(`${this.path}`, this.userController.getCompanies);
     this.router.get(`${this.path}/:id`, this.userController.getCompanyById);
     this.router.post(
-      `${this.path}`,
+      this.path,
       validationMiddleware({
         body: createCompanySchema,
       }),
