@@ -11,7 +11,7 @@ export class CreateUserUseCase {
   async execute(userData: CreateUserDto, logged: User) {
     const userAbility = defineAbilityFor(logged);
 
-    if (userAbility.cannot("create", "User")) {
+    if (userAbility.cannot("create", userData)) {
       throw new HttpException(403, "You don't have permission to create a user");
     }
 
@@ -19,10 +19,6 @@ export class CreateUserUseCase {
 
     if (existingUser) {
       throw new HttpException(409, `This email ${userData.email} already exists`);
-    }
-
-    if (userData.company && !logged?.company?.includes(userData.company)) {
-      throw new HttpException(403, `You can't create a user for ${userData.company}`);
     }
 
     const hashedPassword = await hash(userData.password, 10);

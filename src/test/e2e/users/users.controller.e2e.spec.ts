@@ -54,7 +54,7 @@ describe("UserController (e2e)", () => {
       await agent.post("/users").send(invalidEmailData).set("Content-Type", "application/json").expect(400);
     });
 
-    it("Deve retornar 403 se o usuário não tiver a empresa", async () => {
+    it("Deve retornar 400 se o usuário não tiver a empresa", async () => {
       const invalidCompanyData: CreateUserDto = {
         name: "aleatorio",
         email: "emailinvalido",
@@ -62,7 +62,7 @@ describe("UserController (e2e)", () => {
         company: "aleatorio",
       };
 
-      await agent.post("/users").send(invalidCompanyData).set("Content-Type", "application/json").expect(403);
+      await agent.post("/users").send(invalidCompanyData).set("Content-Type", "application/json").expect(400);
     });
   });
 
