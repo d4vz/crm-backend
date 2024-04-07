@@ -3,6 +3,7 @@ import { Request } from "express";
 
 export interface DataStoredInToken {
   _id: string;
+  company: string;
 }
 
 export interface TokenData {

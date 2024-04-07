@@ -9,7 +9,11 @@ import { sign } from "jsonwebtoken";
 import { Service } from "typedi";
 
 const createToken = (user: User): TokenData => {
-  const dataStoredInToken: DataStoredInToken = { _id: user._id.toString() };
+  const dataStoredInToken: DataStoredInToken = {
+    _id: user._id?.toString(),
+    company: user?.company,
+  };
+
   const expiresIn: number = 60 * 60;
 
   return { expiresIn, token: sign(dataStoredInToken, env.SECRET_KEY, { expiresIn }) };
