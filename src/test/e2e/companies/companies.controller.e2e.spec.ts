@@ -1,7 +1,7 @@
 import App from "@/app";
-import { CreateCompanyDto, UpdateCompanyDto } from "@/dtos/company.dto";
-import { AuthRoute } from "@/routes/auth.route";
-import { CompaniesRoute } from "@/routes/companies.route";
+import { CreateCompanyDto, UpdateCompanyDto } from "@/application/dtos/company.dto";
+import { AuthRoute } from "@/application/routes/auth.route";
+import { CompaniesRoute } from "@/application/routes/companies.route";
 import { authAgent } from "@/test/utils";
 import mongoose from "mongoose";
 import { SuperAgentTest } from "supertest";

@@ -9,14 +9,14 @@ import "reflect-metadata";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-import { Routes } from "@interfaces/routes.interface";
-import { ErrorMiddleware } from "@middlewares/error.middleware";
+import { Routes } from "@/domain/interfaces/routes.interface";
+import { ErrorMiddleware } from "@/infra/middlewares/error.middleware";
 
 import { Server } from "http";
-import { env } from "./config";
-import { dbConnection } from "./database";
-import { morganMiddleware } from "./middlewares/logger.middleware";
-import { rabbitMQServer } from "./rabbitmq/server";
+import { env } from "./infra/config";
+import { dbConnection } from "./infra/database";
+import { morganMiddleware } from "./infra/middlewares/logger.middleware";
+import { rabbitMQServer } from "./infra/rabbitmq/server";
 
 class App {
   public app: express.Application;

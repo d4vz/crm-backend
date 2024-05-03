@@ -1,8 +1,9 @@
 import App from "@/app";
-import { SignUpDto } from "@/dtos/auth.dto";
-import { UserModel } from "@/models/user.model";
-import { AuthRoute } from "@/routes/auth.route";
-import { UserRoute } from "@/routes/users.route";
+import { SignUpDto } from "@/application/dtos/auth.dto";
+import { AuthRoute } from "@/application/routes/auth.route";
+import { UserRoute } from "@/application/routes/users.route";
+import { Roles } from "@/domain/interfaces/roles.enum";
+import { UserModel } from "@/infra/models/user.model";
 import { testUser } from "@/test/utils";
 import { randomUUID } from "crypto";
 import mongoose from "mongoose";
@@ -12,6 +13,8 @@ const user: SignUpDto = {
   name: randomUUID(),
   email: randomUUID() + "@gmail.com",
   password: randomUUID(),
+  roles: [Roles.Manager],
+  company: "6603535000a99c3edd3c156f",
 };
 
 describe("AuthController (e2e)", () => {

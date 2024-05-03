@@ -1,7 +1,7 @@
 import App from "@/app";
-import { CreateLeadDto } from "@/dtos/leads.dto";
-import { AuthRoute } from "@/routes/auth.route";
-import { LeadsRoute } from "@/routes/leads.route";
+import { CreateLeadDto } from "@/application/dtos/leads.dto";
+import { AuthRoute } from "@/application/routes/auth.route";
+import { LeadsRoute } from "@/application/routes/leads.route";
 import { authAgent } from "@/test/utils";
 import mongoose from "mongoose";
 import { SuperAgentTest } from "supertest";
