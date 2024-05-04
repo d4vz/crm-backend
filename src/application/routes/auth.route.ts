@@ -29,7 +29,6 @@ export class AuthRoute implements Routes {
       }),
       this.auth.logIn,
     );
-    this.router.post(`${this.path}/logout`, authMiddleware, this.auth.logOut);
     this.router.use(authMiddleware);
     this.router.get(`${this.path}/me`, authMiddleware, this.auth.me);
   }

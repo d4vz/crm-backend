@@ -3,6 +3,7 @@ import { CreateUserDto, UpdateUserDto } from "@/application/dtos/users.dto";
 import { AuthRoute } from "@/application/routes/auth.route";
 import { UserRoute } from "@/application/routes/users.route";
 
+import { Roles } from "@/domain/interfaces/roles.enum";
 import mongoose from "mongoose";
 import { SuperAgentTest } from "supertest";
 import { authAgent } from "../../utils";
@@ -27,6 +28,7 @@ describe("UserController (e2e)", () => {
       email: "aleatorio@gmail.com",
       password: "senhacom9digitos",
       company: "6603535000a99c3edd3c156f",
+      roles: [Roles.Admin],
     };
 
     it("deve criar um usuário com status 201", async () => {
@@ -49,6 +51,7 @@ describe("UserController (e2e)", () => {
         email: "emailinvalido",
         password: "senhacom9digitos",
         company: "6603535000a99c3edd3c156f",
+        roles: [Roles.Admin],
       };
 
       await agent.post("/users").send(invalidEmailData).set("Content-Type", "application/json").expect(400);
@@ -60,6 +63,7 @@ describe("UserController (e2e)", () => {
         email: "emailinvalido",
         password: "senhacom9digitos",
         company: "aleatorio",
+        roles: [Roles.Admin],
       };
 
       await agent.post("/users").send(invalidCompanyData).set("Content-Type", "application/json").expect(400);

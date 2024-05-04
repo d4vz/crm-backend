@@ -1,18 +1,27 @@
 import { UpdateUserDto } from "@/application/dtos/users.dto";
+import { User } from "@/domain/entities/user.entity";
+import { UsersRepository } from "@/domain/repositories/users.repository";
 import { HttpException } from "@/infra/exceptions/HttpException";
-import { UserModel } from "@/infra/models/user.model";
 import { hash } from "bcrypt";
 import { Service } from "typedi";
 
 @Service()
 export class UpdateUserUseCase {
+  constructor(private readonly usersRepository: UsersRepository) {}
+
   async execute(userId: string, userData: UpdateUserDto) {
+    const user = await this.usersRepository.findById(userId);
+
+    if (!user) {
+      throw new HttpException(404, `User not found`);
+    }
+
     if (userData.email) {
-      const findedUser = await UserModel.findOne({ email: userData.email });
+      const userWithEmail = await this.usersRepository.findByEmail(userData.email);
 
-      const idIsEqual = findedUser?._id.equals(userId);
-
-      if (findedUser && !idIsEqual) throw new HttpException(409, `This email ${userData.email} already exists`);
+      if (userWithEmail && userWithEmail.id !== userId) {
+        throw new HttpException(409, `This email ${userData.email} already exists`);
+      }
     }
 
     if (userData.password) {
@@ -20,9 +29,17 @@ export class UpdateUserUseCase {
       userData = { ...userData, password: hashedPassword };
     }
 
-    const updateUserById = await UserModel.findByIdAndUpdate(userId, { userData }, { new: true });
+    const userToUpdate: Partial<User> = {
+      ...user,
+      ...userData,
+      companyId: userData.company,
+    };
 
-    if (!updateUserById) throw new HttpException(409, "User doesn't exist");
+    const updateUserById = await this.usersRepository.updateById(userId, userToUpdate);
+
+    if (!updateUserById) {
+      throw new HttpException(400, `User could not be updated`);
+    }
 
     return updateUserById;
   }

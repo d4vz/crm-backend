@@ -1,17 +1,18 @@
+import { LoginDto } from "@/application/dtos/auth.dto";
+import { User } from "@/domain/entities/user.entity";
 import { DataStoredInToken, TokenData } from "@/domain/interfaces/auth.interface";
-import { User } from "@/domain/interfaces/users.interface";
+import { UsersRepository } from "@/domain/repositories/users.repository";
+
 import { env } from "@/infra/config";
 import { HttpException } from "@/infra/exceptions/HttpException";
-import { UserModel } from "@/infra/models/user.model";
-import { compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 
 import { Service } from "typedi";
 
 const createToken = (user: User): TokenData => {
   const dataStoredInToken: DataStoredInToken = {
-    _id: user._id?.toString(),
-    company: user?.company,
+    _id: user.id as string,
+    company: user?.companyId,
   };
 
   const expiresIn: number = 60 * 60;
@@ -25,19 +26,24 @@ const createCookie = (tokenData: TokenData): string => {
 
 @Service()
 export class LoginUseCase {
-  public async execute(userData: User): Promise<{ cookie: string; findUser: User; token: string }> {
-    const findUser = await UserModel.findOne({ email: userData.email });
+  constructor(private readonly usersRepository: UsersRepository) {}
 
-    if (!findUser) throw new HttpException(404, `This email ${userData.email} was not found`);
+  public async execute(userData: LoginDto): Promise<{ cookie: string; user: User; token: string }> {
+    const user = await this.usersRepository.findByEmail(userData.email);
 
-    const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
-    if (!isPasswordMatching) throw new HttpException(401, "Password is not matching");
+    if (!user) {
+      throw new HttpException(404, `This email ${userData.email} was not found`);
+    }
 
-    const tokenData = createToken(findUser);
-    const token = tokenData.token;
+    const isPasswordMatching = await user.comparePassword(userData.password);
 
+    if (!isPasswordMatching) {
+      throw new HttpException(401, "Invalid credentials");
+    }
+
+    const tokenData = createToken(user);
     const cookie = createCookie(tokenData);
 
-    return { cookie, findUser, token };
+    return { cookie, user, token: tokenData.token };
   }
 }

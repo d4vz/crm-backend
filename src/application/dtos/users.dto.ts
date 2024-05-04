@@ -1,3 +1,4 @@
+import { Roles } from "@/domain/interfaces/roles.enum";
 import { z } from "zod";
 
 export const createUserSchema = z.object({
@@ -5,6 +6,7 @@ export const createUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(9),
   company: z.string(),
+  roles: z.array(z.nativeEnum(Roles)),
 });
 
 export type CreateUserDto = z.infer<typeof createUserSchema>;

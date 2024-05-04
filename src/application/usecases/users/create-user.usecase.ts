@@ -1,13 +1,15 @@
 import { CreateUserDto } from "@/application/dtos/users.dto";
 import defineAbilityFor from "@/application/permissions/user.permissions";
-import { User } from "@/domain/interfaces/users.interface";
+import { User } from "@/domain/entities/user.entity";
+
+import { UsersRepository } from "@/domain/repositories/users.repository";
 import { HttpException } from "@/infra/exceptions/HttpException";
-import { UserModel } from "@/infra/models/user.model";
-import { hash } from "bcrypt";
 import { Service } from "typedi";
 
 @Service()
 export class CreateUserUseCase {
+  constructor(private readonly usersRepository: UsersRepository) {}
+
   async execute(userData: CreateUserDto, logged: User) {
     const userAbility = defineAbilityFor(logged);
 
@@ -15,17 +17,18 @@ export class CreateUserUseCase {
       throw new HttpException(403, "You don't have permission to create a user");
     }
 
-    const existingUser = await UserModel.findOne({ email: userData.email });
+    const existingUser = await this.usersRepository.findByEmail(userData.email);
 
     if (existingUser) {
       throw new HttpException(409, `This email ${userData.email} already exists`);
     }
 
-    const hashedPassword = await hash(userData.password, 10);
+    const user = new User(userData.name, userData.email, userData.password, userData.roles, userData.company);
 
-    userData = { ...userData, password: hashedPassword };
+    await user.hashPassword();
 
-    const createdUser = await UserModel.create(userData);
+    const createdUser = await this.usersRepository.create(user);
+
     return createdUser;
   }
 }

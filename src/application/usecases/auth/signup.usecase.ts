@@ -1,23 +1,23 @@
 import { SignUpDto } from "@/application/dtos/auth.dto";
-import { User } from "@/domain/interfaces/users.interface";
+import { UsersRepository } from "@/domain/repositories/users.repository";
+
 import { HttpException } from "@/infra/exceptions/HttpException";
-import { UserModel } from "@/infra/models/user.model";
-import { hash } from "bcrypt";
 import { Service } from "typedi";
 
 @Service()
 export class SignUpUseCase {
-  public async execute(userData: SignUpDto): Promise<User> {
-    const findedUser = await UserModel.findOne({ email: userData.email });
+  constructor(private readonly usersRepository: UsersRepository) {}
 
-    if (findedUser) {
+  public async execute(userData: SignUpDto) {
+    const user = await this.usersRepository.findByEmail(userData.email);
+
+    if (!user) {
       throw new HttpException(409, `This email ${userData.email} already exists`);
     }
 
-    const hashedPassword = await hash(userData.password, 10);
+    await user.hashPassword();
 
-    const createUserData: User = await UserModel.create({ ...userData, password: hashedPassword });
-
-    return createUserData;
+    const createdUser = await this.usersRepository.create(user);
+    return createdUser;
   }
 }

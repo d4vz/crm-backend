@@ -1,5 +1,6 @@
 import defineAbilityFor from "@/application/permissions/user.permissions";
-import { User } from "@/domain/interfaces/users.interface";
+import { User } from "@/domain/entities/user.entity";
+
 import { HttpException } from "@/infra/exceptions/HttpException";
 import { UserModel } from "@/infra/models/user.model";
 import { accessibleBy } from "@casl/mongoose";
